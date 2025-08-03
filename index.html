@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Luxury Online Store</title>
+<style>
+  /* Reset & base */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f5f7fa;
+    margin: 0;
+    padding: 0 20px 40px;
+    color: #333;
+  }
+  header {
+    background: linear-gradient(135deg, #4a90e2, #357ABD);
+    padding: 25px 0;
+    text-align: center;
+    color: white;
+    box-shadow: 0 4px 15px rgba(53, 122, 189, 0.4);
+  }
+  header h1 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 2.8rem;
+    letter-spacing: 2px;
+  }
+  .products {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 40px auto;
+  }
+  .product {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    padding: 25px 20px 30px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .product:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.15);
+  }
+  .product img {
+    width: 100%;
+    height: 180px;
+    object-fit: contain;
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+  .product h3 {
+    font-size: 1.4rem;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #1a1a1a;
+  }
+  .product p {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 20px;
+    font-weight: 500;
+  }
+  button {
+    background: #357ABD;
+    border: none;
+    border-radius: 30px;
+    color: white;
+    padding: 12px 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(53, 122, 189, 0.4);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  button:hover {
+    background-color: #265a8c;
+    box-shadow: 0 8px 25px rgba(38, 90, 140, 0.6);
+  }
+
+  .cart {
+    max-width: 400px;
+    background: white;
+    border-radius: 15px;
+    padding: 30px 25px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    font-weight: 600;
+    color: #222;
+  }
+  .cart h2 {
+    margin-top: 0;
+    font-size: 1.8rem;
+    letter-spacing: 1.5px;
+    border-bottom: 2px solid #357ABD;
+    padding-bottom: 12px;
+  }
+  .cart-item {
+    display: flex;
+    justify-content: space-between;
+    margin: 16px 0 12px;
+    font-size: 1.1rem;
+  }
+  .cart-item span {
+    max-width: 70%;
+    overflow-wrap: break-word;
+  }
+  .cart-item button {
+    background: #e74c3c;
+    padding: 5px 10px;
+    font-size: 14px;
+    border-radius: 20px;
+    box-shadow: 0 3px 10px rgba(231, 76, 60, 0.5);
+    transition: background-color 0.25s ease;
+  }
+  .cart-item button:hover {
+    background: #c0392b;
+  }
+  .total {
+    text-align: right;
+    font-size: 1.4rem;
+    margin-top: 22px;
+    border-top: 2px solid #357ABD;
+    padding-top: 15px;
+    color: #1a1a1a;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 900px) {
+    .cart {
+      position: static;
+      max-width: none;
+      margin: 40px auto;
+      box-shadow: none;
+      padding: 20px 15px;
+    }
+    body {
+      padding-bottom: 80px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Luxury Online Store</h1>
+</header>
+
+<main>
+  <section class="products" id="products">
+    <!-- Products loaded here -->
+  </section>
+
+  <section class="cart" id="cart">
+    <h2>Your Cart</h2>
+    <div id="cart-items">
+      <p>Your cart is empty.</p>
+    </div>
+    <div class="total" id="cart-total"></div>
+  </section>
+</main>
+
+<script>
+  const products = [
+    { id: 1, name: "Wireless Headphones", price: 59.99, image: "https://via.placeholder.com/280x180?text=Headphones" },
+    { id: 2, name: "Smartwatch", price: 129.99, image: "https://via.placeholder.com/280x180?text=Smartwatch" },
+    { id: 3, name: "Bluetooth Speaker", price: 39.99, image: "https://via.placeholder.com/280x180?text=Speaker" },
+    { id: 4, name: "Gaming Mouse", price: 29.99, image: "https://via.placeholder.com/280x180?text=Mouse" }
+  ];
+
+  const productsContainer = document.getElementById('products');
+  const cartItemsContainer = document.getElementById('cart-items');
+  const cartTotalContainer = document.getElementById('cart-total');
+
+  let cart = {};
+
+  function renderProducts() {
+    productsContainer.innerHTML = '';
+    products.forEach(product => {
+      const productEl = document.createElement('div');
+      productEl.className = 'product';
+      productEl.innerHTML = `
+        <img src="${product.image}" alt="${product.name}" />
+        <h3>${product.name}</h3>
+        <p>$${product.price.toFixed(2)}</p>
+        <button onclick="addToCart(${product.id})">Add to Cart</button>
+      `;
+      productsContainer.appendChild(productEl);
+    });
+  }
+
+  function addToCart(productId) {
+    if (cart[productId]) {
+      cart[productId].quantity++;
+    } else {
+      const product = products.find(p => p.id === productId);
+      cart[productId] = { ...product, quantity: 1 };
+    }
+    renderCart();
+  }
+
+  function removeFromCart(productId) {
+    if (cart[productId]) {
+      cart[productId].quantity--;
+      if (cart[productId].quantity <= 0) {
+        delete cart[productId];
+      }
+    }
+    renderCart();
+  }
+
+  function renderCart() {
+    const cartItems = Object.values(cart);
+    if (cartItems.length === 0) {
+      cartItemsContainer.innerHTML = '<p>Your cart is empty.</p>';
+      cartTotalContainer.textContent = '';
+      return;
+    }
+
+    cartItemsContainer.innerHTML = '';
+    let total = 0;
+
+    cartItems.forEach(item => {
+      total += item.price * item.quantity;
+      const itemEl = document.createElement('div');
+      itemEl.className = 'cart-item';
+      itemEl.innerHTML = `
+        <span>${item.name} x ${item.quantity}</span>
+        <span>
+          $${(item.price * item.quantity).toFixed(2)} 
+          <button onclick="removeFromCart(${item.id})" aria-label="Remove one ${item.name}">Remove</button>
+        </span>
+      `;
+      cartItemsContainer.appendChild(itemEl);
+    });
+
+    cartTotalContainer.textContent = 'Total: $' + total.toFixed(2);
+  }
+
+  renderProducts();
+  renderCart();
+</script>
+
+</body>
+</html>
+
